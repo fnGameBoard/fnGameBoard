@@ -2,11 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { RainingWordsGameComponent } from './rainingWordsGame/raining-words-game/raining-words-game.component';
+import { RouletteGameComponent } from './rouletteGame/roulette-game/roulette-game.component';
 
 const routes: Routes = [
 
   { path: 'main', component: MainComponent },
   { path: 'rainingWords', component: RainingWordsGameComponent },
+  { path: 'roulette', component: RouletteGameComponent },
+
   { path: '', redirectTo: '/current', pathMatch: 'full' },
   // { path: 'addData', component: AddDataComponent },
   // { path: 'query', component: QueryDataComponent },
