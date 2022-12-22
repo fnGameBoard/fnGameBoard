@@ -5,15 +5,19 @@ import { RainingWordsGameComponent } from './rainingWordsGame/raining-words-game
 import { RouletteGameComponent } from './rouletteGame/roulette-game/roulette-game.component';
 
 const routes: Routes = [
-
+  //메인
   { path: 'main', component: MainComponent },
-  { path: 'rainingWords', component: RainingWordsGameComponent },
+  { path: '', redirectTo: '/main', pathMatch: 'full' },
+  //룰렛
   { path: 'roulette', component: RouletteGameComponent },
 
-  { path: '', redirectTo: '/current', pathMatch: 'full' },
-  // { path: 'addData', component: AddDataComponent },
+  //산성비
+  { path: 'rainingWords', component: RainingWordsGameComponent },
+  // { path: '/play', component: RainingWordsGameComponent },
   // { path: 'query', component: QueryDataComponent },
   // { path: 'del', component: DelDataComponent },
+  // { path: 'current', component: CurrentRateComponent },
+  // { path: '', redirectTo: '/current', pathMatch: 'full' },
 
 ];
 
