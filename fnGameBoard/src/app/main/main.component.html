@@ -1,5 +1,74 @@
-<p>main works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Document</title>
+    <style>
+        .Board{
+            /* background-color:green; */
+            height:500px;
+            display:flex;
+            flex-direction:row;
+            
+            
+        }
+        .contents{
+            position: relative;
+            background-color: yellow;;
+            margin:auto;
+        }
 
-<button routerLink="/roulette">룰렛</button>
-<button routerLink="/rainingWords">산성비게임222</button>
- 
+        .Main{
+            position: absolute;
+            top:100px;
+            left:250px;
+            text-align:center;
+            height:100px;
+            /* width:100px; */
+            /* background-color: blue; */
+        }
+        .Btns{
+            position: absolute;
+            top:250px;
+            left:50px;
+            height:100px;
+                /* justify-content: space-around; */
+            justify-content: space-around;
+            /* background-color:red; */
+            /* display: flex; flex-direction: row;  */
+        }
+        .btnChild{
+            margin: 10px;
+            background-color: transparent;
+            border: none;
+        }
+        .btnChild :hover{
+            background-color: black;
+        }
+        .btnChild :active{
+            background-color: red;
+        }
+        .img1{}
+        .img2{}
+    </style>
+</head>
+<body>
+    <div class="Board">
+        <div class="contents">
+            <img class="img1" src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Pixel_Art_Background.jpg?20220322213957">
+            <div class="Main">
+                <img class="img2" src="../../assets/title.png" width="300px;">
+            </div>
+            <div class="Btns">
+                <button class="btnChild" routerLink="/roulette" name="룰렛"><img src="../../assets/yellowBtn.png" width="200"></button>
+                <button class="btnChild" routerLink="/rainingWords"><img src="../../assets/greenBtn.png" width="200"></button>
+                <button class="btnChild" routerLink="/rainingWords"><img src="../../assets/skyBtn.png" width="200"></button>
+            </div>
+    </div>
+    </div>
+</body>
+</html>
+
