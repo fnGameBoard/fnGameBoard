@@ -1,99 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// // import * as $ from 'jquery';
-
-// @Component({
-//   selector: 'app-roulette-game',
-//   templateUrl: './roulette-game.component.html',
-//   styleUrls: ['./roulette-game.component.css']
-// })
-// export class RouletteGameComponent implements OnInit {
-
-//   constructor() { }
-
-//   ngOnInit(): void {
-
-
-// $(document).ready(function() {
-//   let gift;
-//   let present =[ 1,2,3 , 4,5,6 ]
-
-//   iniGame = function(num){
-//     gift = num;
-//     TweenLite.killTweensOf($(".board_on"));
-//     TweenLite.to($(".board_on"), 0, {css:{rotation:rotationPos[gift]}});
-//     TweenLite.from($(".board_on"),5, {css:{rotation:-3000}, onComplete:endGame, ease:Sine.easeOut});
-//                console.log("gift 숫자 : "+ (gift +1) +"rotationPos" + rotationPos );
-//   }
-
-//   var rotationPos = new Array(60,120,180,240,300,360);
-
-//   TweenLite.to($(".board_on"), 360, {css:{rotation:-4000}, ease: Linear.easeNone});
-//   function endGame(){
-//               var  copImg= "http://img.babathe.com/upload/specialDisplay/htmlImage/2019/test/coupon"+( gift +1) + ".png";
-//                 console.log("이미지 : " + copImg );
-
-//                      $("#popup_gift .lottery_present" ).text(function( ) {   return "축하드립니다."+present [gift ] + " 룰렛숫장"+ ( gift +1)   + " 당첨 되셨습니다.";    });
-//                           $( '<img  src="' + copImg+ '" />' ).prependTo("#popup_gift .lottery_present");
-//   setTimeout(function() {openPopup("popup_gift"); }, 1000);
-// }
-
-//   $(".popup .btn").on("click",function(){
-//     location.reload();
-//   });
-//   function openPopup(id) {
-//     closePopup();
-//     $('.popup').slideUp(0);
-//     var popupid = id
-//     $('body').append('<div id="fade"></div>');
-//     $('#fade').css({
-//     'filter' : 'alpha(opacity=60)'
-//     }).fadeIn(300);
-//     var popuptopmargin = ($('#' + popupid).height()) / 2;
-//     var popupleftmargin = ($('#' + popupid).width()) / 2;
-//     $('#' + popupid).css({
-//       'margin-left' : -popupleftmargin
-//     });
-//     $('#' + popupid).slideDown(500);
-//   }
-//   function closePopup() {
-//     $('#fade').fadeOut(300, function() {
-//       // $(".player").html('');
-//     });
-//     $('.popup').slideUp(400);
-//     return false
-//   }
-//   $(".close").click(closePopup);
-
-// });
-
-
-
-// $(function() {
-//   var clicked  =0;
-
-//   $(".join").on("mousedown",function(){
-//     if( clicked <= 0){    iniGame(Math.floor(Math.random() *6));    }
-//     else  if( clicked >=1 ){    event.preventDefault(); alert( "이벤트 참여 하셨습니다."); }
-//     clicked ++
-//   });
-// }
-// )
-
-
-  // }  ///ngOnInit 끝 
-
-
-
-// }
-
-
-
-
-
-
-
-
-
 import {
   Component,
   ViewChild,
@@ -106,42 +10,43 @@ import {
   BLOCK_SIZE,
   ROWS,
   COLORS,
+  COLORSLIGHTER,
   LINES_PER_LEVEL,
   LEVEL,
   POINTS,
-  KEY
-} from './constants';
+  KEY,
+  COLORSDARKER
+} from '../roulette-game/constants';
+
+// const canvas = document.getElementById('canvas');
+// const ctx = canvas      //('2d');
+
 import { Piece, IPiece } from './piece.component';
 import { GameService } from './game.service';
-import { Conditional } from '@angular/compiler';
-// import { ConsoleReporter } from 'jasmine';
+///// import { Zoundfx } from 'ng-zzfx';
 
 @Component({
-  selector: 'app-roulette-game',
-  templateUrl: './roulette-game.component.html',
-  styleUrls: ['./roulette-game.component.css']
+  selector: 'game-board',
+  templateUrl: 'board.component.tetris.html'
 })
-export class RouletteGameComponent implements OnInit {
+export class BoardComponent implements OnInit {
   @ViewChild('board', { static: true })
-  canvas: ElementRef<HTMLCanvasElement>  = {} as ElementRef;
-  
+  canvas: ElementRef<HTMLCanvasElement>;
   @ViewChild('next', { static: true })
-  canvasNext: ElementRef<HTMLCanvasElement>  = {} as ElementRef;;
-  ctx!: CanvasRenderingContext2D ;
-  // ctx: CanvasRenderingContext2D | null = null;
-  ctxNext!: CanvasRenderingContext2D ;
-  board: number[][] = [];
-  piece!: Piece;
-  next!: Piece ;
-  requestId: number = 0;
-  time!: { 
-          start: number; 
-          elapsed: number; 
-          level: number; 
-        };
-  points: number = 0;
-  lines: number = 0;
-  level: number = 0;
+  canvasNext: ElementRef<HTMLCanvasElement>;
+  ctx: CanvasRenderingContext2D;
+  ctxNext: CanvasRenderingContext2D;
+  board: number[][];
+  piece: Piece;
+  next: Piece;
+  requestId: number;
+  paused: boolean;
+  gameStarted: boolean;
+  time: { start: number; elapsed: number; level: number };
+  points: number;
+  highScore: number;
+  lines: number;
+  level: number;
   moves = {
     [KEY.LEFT]: (p: IPiece): IPiece => ({ ...p, x: p.x - 1 }),
     [KEY.RIGHT]: (p: IPiece): IPiece => ({ ...p, x: p.x + 1 }),
@@ -149,19 +54,17 @@ export class RouletteGameComponent implements OnInit {
     [KEY.SPACE]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
     [KEY.UP]: (p: IPiece): IPiece => this.service.rotate(p)
   };
+  // playSoundFn: Function;
 
   @HostListener('window:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
-    if (event.key === KEY.ESC) {
+    if (event.keyCode === KEY.ESC) {
       this.gameOver();
-    } 
-      else if (this.moves) {
-        // else if (this.moves[event.keyCode]) {
+    } else if (this.moves[event.keyCode]) {
       event.preventDefault();
       // Get new state
-      let p = this.moves[KEY.LEFT](this.piece);
-      // let p = this.moves[event.keyCode](this.piece);
-      if (event.key === KEY.SPACE) {
+      let p = this.moves[event.keyCode](this.piece);
+      if (event.keyCode === KEY.SPACE) {
         // Hard drop
         while (this.service.valid(p, this.board)) {
           this.points += POINTS.HARD_DROP;
@@ -170,7 +73,7 @@ export class RouletteGameComponent implements OnInit {
         }
       } else if (this.service.valid(p, this.board)) {
         this.piece.move(p);
-        if (event.key === KEY.DOWN) {
+        if (event.keyCode === KEY.DOWN) {
           this.points += POINTS.SOFT_DROP;
         }
       }
@@ -181,15 +84,20 @@ export class RouletteGameComponent implements OnInit {
 
   ngOnInit() {
     this.initBoard();
+    this.initSound();
     this.initNext();
     this.resetGame();
+    this.highScore = 0;
+  }
+
+
+  
+  initSound() {
+    // this.playSoundFn = Zoundfx.start(0.2);
   }
 
   initBoard() {
-    // this.ctx = this.canvas.nativeElement.getContext('2d');
-    console.log(this.canvas.nativeElement.getContext('2d'));
-
-
+    this.ctx = this.canvas.nativeElement.getContext('2d');
 
     // Calculate size of canvas from constants.
     this.ctx.canvas.width = COLS * BLOCK_SIZE;
@@ -200,21 +108,20 @@ export class RouletteGameComponent implements OnInit {
   }
 
   initNext() {
-    // this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
+    this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
 
     // Calculate size of canvas from constants.
-    this.ctxNext.canvas.width = 4 * BLOCK_SIZE;
+    // The + 2 is to allow for space to add the drop shadow to
+    // the "next piece"
+    this.ctxNext.canvas.width = 4 * BLOCK_SIZE + 2;
     this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
 
     this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
   }
 
   play() {
+    this.gameStarted = true;
     this.resetGame();
-    console.log(this.ctx);;
-    return 
-
-
     this.next = new Piece(this.ctx);
     this.piece = new Piece(this.ctx);
     this.next.drawNext(this.ctxNext);
@@ -233,7 +140,9 @@ export class RouletteGameComponent implements OnInit {
     this.lines = 0;
     this.level = 0;
     this.board = this.getEmptyBoard();
-    // this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
+    this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
+    this.paused = false;
+    this.addOutlines();
   }
 
   animate(now = 0) {
@@ -266,6 +175,7 @@ export class RouletteGameComponent implements OnInit {
         // Game over
         return false;
       }
+      this.playSoundFn([ , , 224,.02,.02,.08,1,1.7,-13.9 , , , , , ,6.7]);
       this.piece = this.next;
       this.next = new Piece(this.ctx);
       this.next.drawNext(this.ctxNext);
@@ -288,7 +198,7 @@ export class RouletteGameComponent implements OnInit {
       if (this.lines >= LINES_PER_LEVEL) {
         this.level++;
         this.lines -= LINES_PER_LEVEL;
-        // this.time.level = LEVEL[this.level];
+        this.time.level = LEVEL[this.level];
       }
     }
   }
@@ -303,19 +213,82 @@ export class RouletteGameComponent implements OnInit {
     });
   }
 
+  private add3D(x: number, y: number, color: number): void {
+    //Darker Color
+    this.ctx.fillStyle = COLORSDARKER[color];
+    // Vertical
+    this.ctx.fillRect(x + .9, y, .1, 1);
+    // Horizontal
+    this.ctx.fillRect(x, y + .9, 1, .1);
+
+    //Darker Color - Inner 
+    // Vertical
+    this.ctx.fillRect(x + .65, y + .3, .05, .3);
+    // Horizontal
+    this.ctx.fillRect(x + .3, y + .6, .4, .05);
+
+    // Lighter Color - Outer
+    this.ctx.fillStyle = COLORSLIGHTER[color];
+
+    // Lighter Color - Inner 
+    // Vertical
+    this.ctx.fillRect(x + .3, y + .3, .05, .3);
+    // Horizontal
+    this.ctx.fillRect(x + .3, y + .3, .4, .05);
+
+    // Lighter Color - Outer
+    // Vertical
+    this.ctx.fillRect(x, y, .05, 1);
+    this.ctx.fillRect(x, y, .1, .95);
+    // Horizontal
+    this.ctx.fillRect(x, y, 1 , .05);
+    this.ctx.fillRect(x, y, .95, .1);
+  }
+  
+  private addOutlines() {
+    for(let index = 1; index < COLS; index++) {
+      this.ctx.fillStyle = 'black';
+      this.ctx.fillRect(index, 0, .025, this.ctx.canvas.height);
+    }
+
+    for(let index = 1; index < ROWS; index++) {
+      this.ctx.fillStyle = 'black';
+      this.ctx.fillRect(0, index, this.ctx.canvas.width, .025);
+    }
+  }
+
   drawBoard() {
     this.board.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value > 0) {
           this.ctx.fillStyle = COLORS[value];
           this.ctx.fillRect(x, y, 1, 1);
+          this.add3D(x, y, value);
         }
       });
     });
+    this.addOutlines();
+  }
+
+  pause() {
+    if (this.gameStarted) {
+      if (this.paused) {
+        this.animate();
+      } else {
+        this.ctx.font = '1px Arial';
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillText('GAME PAUSED', 1.4, 4);
+        cancelAnimationFrame(this.requestId);
+      }
+
+      this.paused = !this.paused;
+    }
   }
 
   gameOver() {
+    this.gameStarted = false;
     cancelAnimationFrame(this.requestId);
+    this.highScore = this.points > this.highScore ? this.points : this.highScore;
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(1, 3, 8, 1.2);
     this.ctx.font = '1px Arial';
