@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { RainingWordsGameComponent } from './rainingWordsGame/raining-words-game/raining-words-game.component';
+import { BoardComponent } from './rouletteGame/roulette-game/board.component.tetris';
 import { RouletteGameComponent } from './rouletteGame/roulette-game/roulette-game.component';
 
 const routes: Routes = [
@@ -9,7 +10,7 @@ const routes: Routes = [
   { path: 'main', component: MainComponent },
   { path: '', redirectTo: '/main', pathMatch: 'full' },
   //룰렛
-  { path: 'roulette', component: RouletteGameComponent },
+  { path: 'roulette', component: BoardComponent },
 
   //산성비
   { path: 'rainingWords', component: RainingWordsGameComponent },
