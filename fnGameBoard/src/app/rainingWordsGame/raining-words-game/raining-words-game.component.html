@@ -13,6 +13,14 @@
         #inputContents{text-align: center; border-top-style: solid; border-top-color: black; padding-top: 5px;}
         #inputText{display:inline-block}
         #inputBtn{display:inline-block;}
+        
+        /* .trr{
+            border: 1px solid black;
+        } */
+        .tdMap{
+            width: 500px;
+            border : 1px solid black;
+        }
     </style>
 
 </head>
@@ -20,10 +28,17 @@
     <div id="info">
         <div id="score">{{score}}</div>
         <div id="life">{{life}}</div>
+        <div id="time">{{time}}</div>
+ 
         <!-- <div id="time">{{time}}</div> -->
     </div>
     <div id="contents" >
-        <a>{{ab}}</a>
+        <!-- <a>{{ab}}</a> -->
+        <table class="mapTable">
+            <tbody>
+            <tr *ngFor="let num of mapArr"> <td class="tdMap">[[키워드:{{num}}]]</td> </tr>
+            </tbody>
+        </table>
         <!-- <ul>
             <li *ngFor="let d of word">{{d}} / {{d.name}}</li>
         </ul> -->
