@@ -1,329 +1,116 @@
-// import { Component, OnInit } from '@angular/core';
-// // import * as $ from 'jquery';
 
-// @Component({
-//   selector: 'app-roulette-game',
-//   templateUrl: './roulette-game.component.html',
-//   styleUrls: ['./roulette-game.component.css']
-// })
-// export class RouletteGameComponent implements OnInit {
-
-//   constructor() { }
-
-//   ngOnInit(): void {
-
-
-// $(document).ready(function() {
-//   let gift;
-//   let present =[ 1,2,3 , 4,5,6 ]
-
-//   iniGame = function(num){
-//     gift = num;
-//     TweenLite.killTweensOf($(".board_on"));
-//     TweenLite.to($(".board_on"), 0, {css:{rotation:rotationPos[gift]}});
-//     TweenLite.from($(".board_on"),5, {css:{rotation:-3000}, onComplete:endGame, ease:Sine.easeOut});
-//                console.log("gift 숫자 : "+ (gift +1) +"rotationPos" + rotationPos );
-//   }
-
-//   var rotationPos = new Array(60,120,180,240,300,360);
-
-//   TweenLite.to($(".board_on"), 360, {css:{rotation:-4000}, ease: Linear.easeNone});
-//   function endGame(){
-//               var  copImg= "http://img.babathe.com/upload/specialDisplay/htmlImage/2019/test/coupon"+( gift +1) + ".png";
-//                 console.log("이미지 : " + copImg );
-
-//                      $("#popup_gift .lottery_present" ).text(function( ) {   return "축하드립니다."+present [gift ] + " 룰렛숫장"+ ( gift +1)   + " 당첨 되셨습니다.";    });
-//                           $( '<img  src="' + copImg+ '" />' ).prependTo("#popup_gift .lottery_present");
-//   setTimeout(function() {openPopup("popup_gift"); }, 1000);
-// }
-
-//   $(".popup .btn").on("click",function(){
-//     location.reload();
-//   });
-//   function openPopup(id) {
-//     closePopup();
-//     $('.popup').slideUp(0);
-//     var popupid = id
-//     $('body').append('<div id="fade"></div>');
-//     $('#fade').css({
-//     'filter' : 'alpha(opacity=60)'
-//     }).fadeIn(300);
-//     var popuptopmargin = ($('#' + popupid).height()) / 2;
-//     var popupleftmargin = ($('#' + popupid).width()) / 2;
-//     $('#' + popupid).css({
-//       'margin-left' : -popupleftmargin
-//     });
-//     $('#' + popupid).slideDown(500);
-//   }
-//   function closePopup() {
-//     $('#fade').fadeOut(300, function() {
-//       // $(".player").html('');
-//     });
-//     $('.popup').slideUp(400);
-//     return false
-//   }
-//   $(".close").click(closePopup);
-
-// });
-
-
-
-// $(function() {
-//   var clicked  =0;
-
-//   $(".join").on("mousedown",function(){
-//     if( clicked <= 0){    iniGame(Math.floor(Math.random() *6));    }
-//     else  if( clicked >=1 ){    event.preventDefault(); alert( "이벤트 참여 하셨습니다."); }
-//     clicked ++
-//   });
-// }
-// )
-
-
-  // }  ///ngOnInit 끝 
-
-
-
-// }
-
-
-
-
-
-
-
-
-
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  OnInit,
-  HostListener
-} from '@angular/core';
-import {
-  COLS,
-  BLOCK_SIZE,
-  ROWS,
-  COLORS,
-  LINES_PER_LEVEL,
-  LEVEL,
-  POINTS,
-  KEY
-} from './constants';
-import { Piece, IPiece } from './piece.component';
-import { GameService } from './game.service';
-import { Conditional } from '@angular/compiler';
-// import { ConsoleReporter } from 'jasmine';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-roulette-game',
-  templateUrl: './roulette-game.component.html',
-  styleUrls: ['./roulette-game.component.css']
-})
-export class RouletteGameComponent implements OnInit {
-  @ViewChild('board', { static: true })
-  canvas: ElementRef<HTMLCanvasElement>  = {} as ElementRef;
+    selector: 'roulette-game',
+    templateUrl: './roulette-game.component.html',
+    styleUrls: ['./roulette-game.component.css']
+  })
+  export class RouletteGameComponent {
+
+    @ViewChild('canvas') c! : ElementRef<HTMLCanvasElement>;
+
+    public ctx : any;
   
-  @ViewChild('next', { static: true })
-  canvasNext: ElementRef<HTMLCanvasElement>  = {} as ElementRef;;
-  ctx!: CanvasRenderingContext2D ;
-  // ctx: CanvasRenderingContext2D | null = null;
-  ctxNext!: CanvasRenderingContext2D ;
-  board: number[][] = [];
-  piece!: Piece;
-  next!: Piece ;
-  requestId: number = 0;
-  time!: { 
-          start: number; 
-          elapsed: number; 
-          level: number; 
+    
+    ngAfterViewInit():void {
+        setTimeout(() => {
+            this.ctx = this.c.nativeElement.getContext('2d');
+  
+            // ////// 룰렛에 들어갈 항목 배열선언 
+            // // let Array : string[] = [];
+            // let Arry = new Array(9);
+            
+            // for (let i = 0; i <Arry.length; i++) {     ////배열 요소만큼 push
+            //   Arry.push(Arry[i]);
+            // };
+  
+  
+            this.newMake();
+        }, 10 )
+    }  //
+    // 룰렛에 들어갈 항목
+      product = [
+        "떡볶이", '돈가스', "초밥", "피자", "냉면", "치킨", '족발', "피자", "삼겹살",
+      ];
+  
+      // 각 항목에 해당하는 색상
+      colors = [
+        "#dc0936", "#e6471d", "#f7a416", 
+        "#efe61f ", "#60b236", "#209b6c", 
+        "#169ed8", "#3f297e", "#87207b", 
+        "#be107f", "#e7167b"
+      ];
+  
+  
+      newMake(){   ///함수 정의 
+        // let [cw, ch] = [this.c.nativeElement.width / 2, this.c.nativeElement.height / 2];     ////캔버스의 중점 위치 구하기 >> CanVas의 높이 너비의 절반 값으로 함 
+        let cw = this.c.nativeElement.width / 2;     ///////캔버스의 너비
+        let ch = this.c.nativeElement.height / 2;    ///////캔버스의 높이
+        
+        let arc = Math.PI / (this.product.length / 2);    //// 룰렛에 그릴 항목의 수에 따른 항목의 크기 값     Math.PI = 원주율
+                                                          //>> 이 값을 통해 동그란 룰렛에 각 영역을 그리는 방법인 arc 메소드를 이용 
+        ///////arc 값 참고 
+        // x, y -> 중점, radius -> 반지름(x와 같은 값)
+        // ctx.arc(x, y, radius, startAngle, endAngle);
+        // ctx.arc(cw, ch, cw, arc * (i - 1), arc * i);    >> 항목 개수로 나눈 크기를 이용해서 (i - 1) ~ i 지점까지 만의 원을 그리는 것임 
+  
+  
+        // 룰렛 배경 그리기
+        for (let i = 0; i < this.product.length; i++) {
+          this.ctx.beginPath();
+          this.ctx.fillStyle = this.colors[i % (this.colors.length -1)];
+          this.ctx.moveTo(cw, ch);
+          this.ctx.arc(cw, ch, cw, arc * (i - 1), arc * i);    //>> 항목 개수로 나눈 크기를 이용해서 (i - 1) ~ i 지점까지 만의 원을 그리는 것
+          this.ctx.fill();
+          this.ctx.closePath();
+        }  
+  
+        this.ctx.fillStyle = "#fff";
+        this.ctx.font = "18px Pretendard";
+        this.ctx.textAlign = "center";
+  
+        //save, restore 메서드를 이용해서 속성 값이 적용된 캔버스의 설정 값(이미지 X)을 저장하고 가져올 수 있음 
+        //translate, rotate로 인해 변형된 콘텍스트 설정 값을 초기값으로 되돌려 주는 작업을 통해서 텍스트를 그려줌
+        for (let i = 0; i < this.product.length; i++) {
+          const angle = (arc * i) + (arc / 2);
+          this.ctx.save()  ;
+          this.ctx.translate(
+            cw + Math.cos(angle) * (cw - 50),
+            ch + Math.sin(angle) * (ch - 50),
+          );
+  
+          this.ctx.rotate(angle + Math.PI / 2);
+  
+          this.product[i].split(" ").forEach((text, j) => {
+            this.ctx.fillText(text, 0, 30 * j);
+          });
+    
+          this.ctx.restore();
         };
-  points: number = 0;
-  lines: number = 0;
-  level: number = 0;
-  moves = {
-    [KEY.LEFT]: (p: IPiece): IPiece => ({ ...p, x: p.x - 1 }),
-    [KEY.RIGHT]: (p: IPiece): IPiece => ({ ...p, x: p.x + 1 }),
-    [KEY.DOWN]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
-    [KEY.SPACE]: (p: IPiece): IPiece => ({ ...p, y: p.y + 1 }),
-    [KEY.UP]: (p: IPiece): IPiece => this.service.rotate(p)
-  };
-
-  @HostListener('window:keydown', ['$event'])
-  keyEvent(event: KeyboardEvent) {
-    if (event.key === KEY.ESC) {
-      this.gameOver();
-    } 
-      else if (this.moves) {
-        // else if (this.moves[event.keyCode]) {
-      event.preventDefault();
-      // Get new state
-      let p = this.moves[KEY.LEFT](this.piece);
-      // let p = this.moves[event.keyCode](this.piece);
-      if (event.key === KEY.SPACE) {
-        // Hard drop
-        while (this.service.valid(p, this.board)) {
-          this.points += POINTS.HARD_DROP;
-          this.piece.move(p);
-          p = this.moves[KEY.DOWN](this.piece);
-        }
-      } else if (this.service.valid(p, this.board)) {
-        this.piece.move(p);
-        if (event.key === KEY.DOWN) {
-          this.points += POINTS.SOFT_DROP;
-        }
-      }
-    }
+  
+      }; 
+  
+      ////////버튼눌러서 룰렛 돌리기 
+      rotate(){
+        this.c.nativeElement.style.transform = 'initial';
+        this.c.nativeElement.style.transition = 'initial';
+        
+        setTimeout(() => {
+          //// 룰렛 당첨 결정 
+          let ran = Math.floor(Math.random() * this.product.length);     //////Math.random()으로 얻은 난수에 항목의 갯수를 곱해주면 랜덤한 당첨결과 얻을 수 있음 
+      
+          let arc = 360 / this.product.length;    /////각도?
+          let rotate = (ran * arc) + 3600 + (arc * 3) - (arc/4);      ///// 랜덤한 결과값에 영역의 크기롤 곱해서 룰렛의 위치를 맞춰주고, 360도를 10번 돌라는 의미로 3600울 추가로 더해줌 
+                                                                      ///// 오차범위를 조정하기 위해 (arc * 3)의 수식을 추가로 사용
+          this.c.nativeElement.style.transform = 'rotate(-' + rotate + 'deg)';
+          this.c.nativeElement.style.transition = '2s';   ///// css코드로 캔버스에 transition 속성을 2초 정도로 지정하기 
+          
+          setTimeout(() => alert('룰렛 결과는 '+ this.product[ran] +'입니다'), 2000);   //////다 돌고나서 결과값 보여주기 
+        }, 1);
+      };
+    
+  
+  
   }
-
-  constructor(private service: GameService) {}
-
-  ngOnInit() {
-    this.initBoard();
-    this.initNext();
-    this.resetGame();
-  }
-
-  initBoard() {
-    // this.ctx = this.canvas.nativeElement.getContext('2d');
-    console.log(this.canvas.nativeElement.getContext('2d'));
-
-
-
-    // Calculate size of canvas from constants.
-    this.ctx.canvas.width = COLS * BLOCK_SIZE;
-    this.ctx.canvas.height = ROWS * BLOCK_SIZE;
-
-    // Scale so we don't need to give size on every draw.
-    this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
-  }
-
-  initNext() {
-    // this.ctxNext = this.canvasNext.nativeElement.getContext('2d');
-
-    // Calculate size of canvas from constants.
-    this.ctxNext.canvas.width = 4 * BLOCK_SIZE;
-    this.ctxNext.canvas.height = 4 * BLOCK_SIZE;
-
-    this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE);
-  }
-
-  play() {
-    this.resetGame();
-    console.log(this.ctx);;
-    return 
-
-
-    this.next = new Piece(this.ctx);
-    this.piece = new Piece(this.ctx);
-    this.next.drawNext(this.ctxNext);
-    this.time.start = performance.now();
-
-    // If we have an old game running a game then cancel the old
-    if (this.requestId) {
-      cancelAnimationFrame(this.requestId);
-    }
-
-    this.animate();
-  }
-
-  resetGame() {
-    this.points = 0;
-    this.lines = 0;
-    this.level = 0;
-    this.board = this.getEmptyBoard();
-    // this.time = { start: 0, elapsed: 0, level: LEVEL[this.level] };
-  }
-
-  animate(now = 0) {
-    this.time.elapsed = now - this.time.start;
-    if (this.time.elapsed > this.time.level) {
-      this.time.start = now;
-      if (!this.drop()) {
-        this.gameOver();
-        return;
-      }
-    }
-    this.draw();
-    this.requestId = requestAnimationFrame(this.animate.bind(this));
-  }
-
-  draw() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-    this.piece.draw();
-    this.drawBoard();
-  }
-
-  drop(): boolean {
-    let p = this.moves[KEY.DOWN](this.piece);
-    if (this.service.valid(p, this.board)) {
-      this.piece.move(p);
-    } else {
-      this.freeze();
-      this.clearLines();
-      if (this.piece.y === 0) {
-        // Game over
-        return false;
-      }
-      this.piece = this.next;
-      this.next = new Piece(this.ctx);
-      this.next.drawNext(this.ctxNext);
-    }
-    return true;
-  }
-
-  clearLines() {
-    let lines = 0;
-    this.board.forEach((row, y) => {
-      if (row.every(value => value !== 0)) {
-        lines++;
-        this.board.splice(y, 1);
-        this.board.unshift(Array(COLS).fill(0));
-      }
-    });
-    if (lines > 0) {
-      this.points += this.service.getLinesClearedPoints(lines, this.level);
-      this.lines += lines;
-      if (this.lines >= LINES_PER_LEVEL) {
-        this.level++;
-        this.lines -= LINES_PER_LEVEL;
-        // this.time.level = LEVEL[this.level];
-      }
-    }
-  }
-
-  freeze() {
-    this.piece.shape.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value > 0) {
-          this.board[y + this.piece.y][x + this.piece.x] = value;
-        }
-      });
-    });
-  }
-
-  drawBoard() {
-    this.board.forEach((row, y) => {
-      row.forEach((value, x) => {
-        if (value > 0) {
-          this.ctx.fillStyle = COLORS[value];
-          this.ctx.fillRect(x, y, 1, 1);
-        }
-      });
-    });
-  }
-
-  gameOver() {
-    cancelAnimationFrame(this.requestId);
-    this.ctx.fillStyle = 'black';
-    this.ctx.fillRect(1, 3, 8, 1.2);
-    this.ctx.font = '1px Arial';
-    this.ctx.fillStyle = 'red';
-    this.ctx.fillText('GAME OVER', 1.8, 4);
-  }
-
-  getEmptyBoard(): number[][] {
-    return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-  }
-}
+  

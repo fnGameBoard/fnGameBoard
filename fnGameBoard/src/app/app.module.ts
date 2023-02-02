@@ -8,6 +8,7 @@ import { RainingWordsGameComponent } from './rainingWordsGame/raining-words-game
 import { RouletteGameComponent } from './rouletteGame/roulette-game/roulette-game.component';
 import { WordComponent } from './rainingWordsGame/word/word.component';
 import { PlayComponent } from './rainingWordsGame/play/play.component';
+import { TetrisComponent } from './tetris/tetris.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { PlayComponent } from './rainingWordsGame/play/play.component';
     RouletteGameComponent,
     WordComponent,
     PlayComponent,
+    TetrisComponent,
   ],
   imports: [
     BrowserModule,

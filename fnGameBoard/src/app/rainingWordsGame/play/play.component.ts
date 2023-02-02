@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { timer , Subscription, Observable } from 'rxjs';
 import { GameService } from '../game.service';
 import { Word } from '../word';
-import { select } from '@ngrx/store';
+// import { select } from '@ngrx/store';
 import { WordComponent } from '../word/word.component';
 
 @Component({

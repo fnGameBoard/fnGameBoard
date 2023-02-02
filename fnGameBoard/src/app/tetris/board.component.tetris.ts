@@ -16,7 +16,7 @@ import {
   POINTS,
   KEY,
   COLORSDARKER
-} from '../roulette-game/constants';
+} from '../tetris/constants';
 
 // const canvas = document.getElementById('canvas');
 // const ctx = canvas      //('2d');

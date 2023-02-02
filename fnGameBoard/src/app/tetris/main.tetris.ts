@@ -1,8 +1,8 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-import { AppModule } from '../roulette-game/app.module.tetris';
-import { environment } from '../roulette-game/environment';
+import { AppModule } from '../tetris/app.module.tetris';
+import { environment } from '../tetris/environment';
 
 if (environment.production) {
   enableProdMode();
