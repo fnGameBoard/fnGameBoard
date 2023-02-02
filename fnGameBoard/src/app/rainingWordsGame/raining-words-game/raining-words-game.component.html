@@ -13,6 +13,28 @@
         #inputContents{text-align: center; border-top-style: solid; border-top-color: black; padding-top: 5px;}
         #inputText{display:inline-block}
         #inputBtn{display:inline-block;}
+        
+        /* .trr{
+            border: 1px solid black;
+        } */
+        .tdMap{
+            width: 500px;
+            border : 1px solid black;
+        }
+
+        tr{
+            width: 500px;
+            border : 1px solid black;
+        }
+
+        td{
+            width: 500px;
+            border : 1px solid black;
+        }
+        table{
+            width: 500px;
+            border : 1px solid black;
+        }
     </style>
 
 </head>
@@ -20,10 +42,18 @@
     <div id="info">
         <div id="score">{{score}}</div>
         <div id="life">{{life}}</div>
+        <div id="time">{{time}}</div>
         <!-- <div id="time">{{time}}</div> -->
     </div>
     <div id="contents" >
-        <a>{{ab}}</a>
+        <!-- <a>{{ab}}</a> -->
+        <table class="mapTable">
+            <tbody>
+                <tr *ngFor="let word of mapArr">
+                    <td class="tdMap">[키워드:{{word}}]</td>
+                </tr>
+            </tbody>
+        </table>
         <!-- <ul>
             <li *ngFor="let d of word">{{d}} / {{d.name}}</li>
         </ul> -->
@@ -32,7 +62,8 @@
         <div id="inputContents">
             <!-- 입력텍스트박스 -->
             <div id="inputText">
-                <input type="text" id="tajaText" />
+                <!-- <input type="text" id="tajaText" [(ngModel)]="num"/> -->
+                <input type="text" class="form-control" id="num" required [(ngModel)]="num" name="num" />
             </div>
 
             <!-- 시작버튼 -->
@@ -52,15 +83,8 @@
           <!-- <app-play-info></app-play-info> -->
           <!-- <app-gameover  *ngIf="gameOver$ | async"></app-gameover> -->
         </div>
-      </div>
-      <div class="game-input">
-        <input type="text" >
-        <!-- (keyup.enter)="handleInput($event)" -->
     </div>
-    <div class="game-input">
-        <button routerLink="/main">돌아가기</button>
-        <!-- <a routerLink="/play">Start</a> -->
-      </div>
+
 
 </body>
 
