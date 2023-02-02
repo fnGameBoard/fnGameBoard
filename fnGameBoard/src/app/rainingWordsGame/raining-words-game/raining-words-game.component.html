@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>한글 타자</title>
     <style>
-        #info{float:left; margin-left: 50px; font-size : 30px;}
+        /* #info{float:left; margin-left: 50px; font-size : 30px;} */
         #contents{background-color: rgb(230, 191, 191); width: 1200px; height: 800px; margin: 0 auto;}
         #tajaContents{width:100%; height: 95%; position: relative}
         #inputContents{text-align: center; border-top-style: solid; border-top-color: black; padding-top: 5px;}
@@ -17,6 +17,14 @@
         /* .trr{
             border: 1px solid black;
         } */
+        .info{
+            display: block;
+            width: 300px;
+            height: 300px;
+            border : 1px solid black;
+            background-color: red;
+
+        }
         .tdMap{
             width: 500px;
             border : 1px solid black;
@@ -32,8 +40,44 @@
             border : 1px solid black;
         }
         table{
-            width: 500px;
+
+        }
+        #contents{
+            position: relative;
+
+        }
+        .boardBox{
+            display: inline-block;
+            width: 100%;
+            background-color: rgb(178, 214, 178);
+            /* position: relative; */
+            height:740px;
+            top:30px;
+        }
+        .answerBox{
+            display: inline-block;
+            position: absolute;
+            top:750px;
+            left:0px;
+            width: 100%;
+            background-color: rgb(228, 173, 173);
+            text-align: center;
+            margin:auto;
+        }
+        .inputText{
+            display: inline-block;
+        }
+        .answerBox{
+            display: inline-block;
+        }
+        tbody{
+            display: flex;
+            width: 100%;
             border : 1px solid black;
+            /* flex-direction: column; */
+	/* flex-direction: column; */
+	/* flex-direction: row-reverse; */
+        flex-direction: column-reverse;
         }
     </style>
 
@@ -46,33 +90,29 @@
         <!-- <div id="time">{{time}}</div> -->
     </div>
     <div id="contents" >
-        <!-- <a>{{ab}}</a> -->
-        <table class="mapTable">
-            <tbody>
-                <tr *ngFor="let word of mapArr">
-                    <td class="tdMap">[키워드:{{word}}]</td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- <ul>
-            <li *ngFor="let d of word">{{d}} / {{d.name}}</li>
-        </ul> -->
-        <div id="tajaContents"></div>
-
-        <div id="inputContents">
+        <div class="boardBox">
+            <table class="mapTable">
+                <tbody>
+                    <tr *ngFor="let word of mapArr">
+                        <td class="tdMap" *ngFor="let i of word">{{i}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="answerBox">
             <!-- 입력텍스트박스 -->
             <div id="inputText">
-                <!-- <input type="text" id="tajaText" [(ngModel)]="num"/> -->
-                <input type="text" class="form-control" id="num" required [(ngModel)]="num" name="num" />
+                <input type="text" class="form-control" id="num" required [(ngModel)]="answerWord" name="answerWord" />
             </div>
-
-            <!-- 시작버튼 -->
-            <div id="inputBtn">
-                <button id="startBtn" (click)="onClickStartBtn()">시작하기</button>
+            <div id="answerBtn">
+                <button id="answerBtn"(click)="answerBtn()">입력</button>
             </div>
         </div>
     </div>
-    <input type="text" value="버튼을 눌러서 게임을 시작하세요" disabled >
+
+
+    <!-- 시작버튼 -->
+    <button type="text" value="시작하기" (click)="onClickStartBtn()">게임시작</button>
 
 
     <div class="game">
