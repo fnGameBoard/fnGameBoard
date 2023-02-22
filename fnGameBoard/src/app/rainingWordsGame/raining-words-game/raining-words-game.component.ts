@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { Word } from '../word';
 import { WORDS } from "../word-list";
@@ -20,21 +20,32 @@ export class RainingWordsGameComponent implements OnInit {
   public answerWord :string | undefined;//정답입력값
   public mapArr:any = [];
   public ab: string | undefined;
-  public score: string = "SCORE : ";
+  public scoreTitle: string = "SCORE : ";
+  public score: number = 0;
   public life: string = "LIFE : ❤️❤️❤️❤️❤️";
   public time: string = "TIME : 00:00:00";
   public timeNum: number = 0;
   public DOWNTIME = 2000;
+  public timerflag : number = 0;
+
 
   //생성자
   constructor() {}
 
   ngOnInit(): void {
+    // this.Arr2=[{},{}];
   }
   ngAfterViewInit(): void {
   }
   ngAfterViewChecked(): void {
   }
+  @HostListener('window:keydown', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      this.answerBtn();
+    }
+  }
+
   timer(timeNum: number): void {
     // let startDate1: Date = new Date();       ///꼭 Date형식으로 변환 후 사용합니다. 
     // let endDate1: Date = new Date();           ///꼭 Date형식으로 변환 후 사용합니다. 
@@ -82,9 +93,10 @@ export class RainingWordsGameComponent implements OnInit {
     // }
 
   onClickStartBtn() {
-
     //시간
+    if(this.timerflag == 0){
     this.timer(this.timeNum);
+    this.timerflag = 1;
 
     let count = 1;
     const timeoutId = setInterval(() => {
@@ -98,24 +110,39 @@ export class RainingWordsGameComponent implements OnInit {
       this.mapArr.push(oneLine);
       
         if (count++ === 20) clearInterval(timeoutId);
-      }, 500);
+      }, 200);
 
       // console.log("timeoutId: ", timeoutId);
+    } ;
   }
 
   //입력버튼을 누르면
   answerBtn(){
+
     console.log(this.answerWord);
     console.log(this.mapArr);
-    if(this.answerWord !=undefined){
-      for(let i = 0;i<this.mapArr.length; i++){
-        for(let j = 0; j<this.mapArr[i].length; j++){
-          if(this.mapArr[i][j] == this.answerWord){
-            console.log("정답 : " + i +", "+ j);
-            console.log("정답 : " + this.mapArr[i][j]);
-          }
+
+    //답변 찾아 지우기
+    if(this.answerWord != undefined){
+      this.inputAnswer(this.answerWord);
+    }
+  }
+
+
+  inputAnswer(answer:string){
+    for(let i = 0;i<this.mapArr.length; i++){
+      for(let j = 0; j<this.mapArr[i].length; j++){
+        if(this.mapArr[i][j] == answer){
+          this.mapArr[i][j] = "";
+          this.score += 100;
+          this.answerWord = "";
+          // console.log("정답 : " + i +", "+ j);
+          // console.log("정답 : " + this.mapArr[i][j]);
         }
       }
     }
   }
+
+
+
 }
