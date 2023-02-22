@@ -6,5 +6,15 @@
     <input type="text" name="무엇을 입력할까요?" value="무엇을 입력할까요?">
   
     <button  (click)="rotate()">룰렛 돌리기</button>
+
+
+
+    
+  <ul id="test">
+    <input  *ngFor="let block of blockArry; index as i"   id= "test{{i}}"   >  
+    <br>
+  </ul>
+  <button  (click)="making()">룰렛 만들기:D</button>
+
   </div>
   
